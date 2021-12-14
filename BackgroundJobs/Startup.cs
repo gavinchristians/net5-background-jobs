@@ -1,4 +1,5 @@
 using BackgroundJobs.Business.BackgroundTasks;
+using BackgroundJobs.Business.Processors;
 using BackgroundJobs.Business.Services;
 using BackgroundJobs.Data.DbContexts;
 using MediatR;
@@ -36,6 +37,7 @@ namespace BackgroundJobs
 
             services.AddHostedService<QueueService>();
 
+            services.AddScoped<IJobManager, JobManager>();
             services.AddSingleton<IBackgroundQueue, BackgroundQueue>();
 
             services.AddRazorPages();
