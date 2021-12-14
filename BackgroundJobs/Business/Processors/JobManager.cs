@@ -95,18 +95,6 @@ namespace BackgroundJobs.Business.Processors
             return job;
         }
 
-        public async Task<Job> CheckForDuplicateJob(string jobName, string jobType, DateTime date)
-        {
-            return await _db.Jobs.AsNoTracking()
-                           .OrderByDescending(x => x.JobQueued)
-                           .Where(x =>
-                               x.JobName.Equals(jobName) &&
-                               x.JobType.Equals(jobType) &&
-                               x.JobQueued.ToString("dd/MM/yyyy").Equals(date.ToString("dd/MM/yyy"))
-                           )
-                           .FirstOrDefaultAsync();
-        }
-
         public async Task CancelAllJobs(string jobType, string result, string user)
         {
             // Cancel statuses
@@ -145,7 +133,6 @@ namespace BackgroundJobs.Business.Processors
         Task<bool> IsJobCancelled(int jobId);
         Task CompleteJob(Job job, string result);
         Task<Job> QueueJob(string jobName, string jobType, string user);
-        Task<Job> CheckForDuplicateJob(string jobName, string jobType, DateTime date);
         Task CancelAllJobs(string jobType, string result, string user);
     }
 }

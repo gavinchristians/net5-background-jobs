@@ -1,4 +1,5 @@
-﻿using BackgroundJobs.Data.DbContexts;
+﻿using BackgroundJobs.Business.Processors;
+using BackgroundJobs.Data.DbContexts;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -23,6 +24,8 @@ namespace BackgroundJobs.Tests
         public static IServiceProvider _provider;
         public static string connectionString;
 
+        public static readonly JobManager _jobManager;
+
         static SliceFixture()
         {
             var builder = new ConfigurationBuilder()
@@ -45,6 +48,7 @@ namespace BackgroundJobs.Tests
             _dbContext = new ApplicationDbContext(dbBuilder.Options);
 
 
+            _jobManager = new JobManager(_dbContext);
 
             _checkpoint = new Checkpoint();
         }
