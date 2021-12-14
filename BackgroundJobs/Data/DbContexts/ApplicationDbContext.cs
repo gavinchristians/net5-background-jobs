@@ -1,7 +1,9 @@
 ﻿using BackgroundJobs.Data.Entities.Application;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -9,6 +11,8 @@ namespace BackgroundJobs.Data.DbContexts
 {
     public class ApplicationDbContext: DbContext
     {
+        private IDbContextTransaction _currentTransaction;
+
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             :base(options)
         {
@@ -23,6 +27,53 @@ namespace BackgroundJobs.Data.DbContexts
             // For example, you can rename the ASP.NET Identity table names and more.
             // Add your customizations after calling base.OnModelCreating(builder);
 
+        }
+
+        public async Task BeginTransactionAsync()
+        {
+            if (_currentTransaction != null)
+            {
+                return;
+            }
+
+            _currentTransaction = await Database.BeginTransactionAsync(IsolationLevel.ReadCommitted).ConfigureAwait(false);
+        }
+        public async Task CommitTransactionAsync()
+        {
+            try
+            {
+                await SaveChangesAsync().ConfigureAwait(false);
+
+                _currentTransaction?.Commit();
+            }
+            catch
+            {
+                RollbackTransaction();
+                throw;
+            }
+            finally
+            {
+                if (_currentTransaction != null)
+                {
+                    _currentTransaction.Dispose();
+                    _currentTransaction = null;
+                }
+            }
+        }
+        public void RollbackTransaction()
+        {
+            try
+            {
+                _currentTransaction?.Rollback();
+            }
+            finally
+            {
+                if (_currentTransaction != null)
+                {
+                    _currentTransaction.Dispose();
+                    _currentTransaction = null;
+                }
+            }
         }
     }
 }

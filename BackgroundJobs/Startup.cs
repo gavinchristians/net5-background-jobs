@@ -1,6 +1,7 @@
 using BackgroundJobs.Business.BackgroundTasks;
 using BackgroundJobs.Business.Services;
 using BackgroundJobs.Data.DbContexts;
+using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -30,6 +31,8 @@ namespace BackgroundJobs
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
+
+            services.AddMediatR(typeof(Startup));
 
             services.AddHostedService<QueueService>();
 
