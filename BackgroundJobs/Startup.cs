@@ -1,3 +1,5 @@
+using BackgroundJobs.Business.BackgroundTasks;
+using BackgroundJobs.Business.Services;
 using BackgroundJobs.Data.DbContexts;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -28,6 +30,10 @@ namespace BackgroundJobs
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
+
+            services.AddHostedService<QueueService>();
+
+            services.AddSingleton<IBackgroundQueue, BackgroundQueue>();
 
             services.AddRazorPages();
         }
